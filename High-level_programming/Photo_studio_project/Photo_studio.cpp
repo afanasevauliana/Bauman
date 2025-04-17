@@ -30,15 +30,15 @@ int f2() {
 } 
 
 int displayEmployeeInfo() {
-    Employee emp("John", "Doe", 30, "john_doe", "password123", "Master");
+    Employee emp("Artem", "Kapralov", 30, "Artem_Kapralov", "123456789", "Photographer");
     emp.displayInfo();
     cout << endl;
     return 3;
 }
 
 int displayClientInfo() {
-    Service service("Haircut", 50.0, "Standard haircut for clients");
-    Client client("Alice", "Smith", 25, "alice_smith", "password456", service);
+    Service service("Photoshoot", 50.0, "Photoshoot in the style of the nineteenth century");
+    Client client("Anastasia", "Frolova", 25, "Anastasia_Frolova", "0345244444", service);
     client.displayInfo();
     cout << endl;
     return 4;
