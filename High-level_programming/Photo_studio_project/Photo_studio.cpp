@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "menu/CMenu.h"
 #include "menu/CMenuItem.h"
 #include "Models/User.h"
@@ -6,8 +7,14 @@
 #include "Models/Service.h"
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <algorithm>
+#include <locale>
+#include <codecvt>
 using namespace std;
-
+vector<Service> services;
+vector<Employee> employees;
+vector<Client> clients;
 
 #pragma region функции-заглушки
 int f1() {
@@ -44,18 +51,160 @@ int displayClientInfo() {
     return 4;
 }
 
+int addService() {
+    Service newService;
+    cin >> newService;
+    services.push_back(newService);
+    cout << "Услуга добавлена:\n" << newService << endl;
+    return 5;
+}
+
+int listServices() {
+    cout << "Список услуг:\n";
+    for (const auto& service : services) {
+        cout << service << "\n---\n";
+    }
+    return 6;
+}
+
+int sortServicesByPrice() {
+    sort(services.begin(), services.end());
+    cout << "Услуги отсортированы по цене.\n";
+    listServices();
+    return 7;
+}
+
+int addEmployee() {
+    string firstName, lastName, login, password, position;
+    int age;
+    
+    cout << "Введите имя: ";
+    cin >> firstName;
+    cout << "Введите фамилию: ";
+    cin >> lastName;
+    cout << "Введите возраст: ";
+    cin >> age;
+    cout << "Введите логин: ";
+    cin >> login;
+    cout << "Введите пароль: ";
+    cin >> password;
+    cin.ignore();
+    cout << "Введите должность: ";
+    getline(cin, position);
+    
+    employees.emplace_back(firstName, lastName, age, login, password, position);
+    cout << "Сотрудник добавлен:\n" << employees.back() << endl;
+    return 8;
+}
+
+int listEmployees() {
+    cout << "Список сотрудников:\n";
+    for (const auto& emp : employees) {
+        cout << emp << "\n---\n";
+    }
+    return 9;
+}
+
+int addClient() {
+    if (services.empty()) {
+        cout << "Сначала добавьте услуги!\n";
+        return 10;
+    }
+    
+    string firstName, lastName, login, password;
+    int age, serviceChoice;
+    
+    cout << "Введите имя: ";
+    cin >> firstName;
+    cout << "Введите фамилию: ";
+    cin >> lastName;
+    cout << "Введите возраст: ";
+    cin >> age;
+    cout << "Введите логин: ";
+    cin >> login;
+    cout << "Введите пароль: ";
+    cin >> password;
+    
+    cout << "Выберите услугу:\n";
+    for (size_t i = 0; i < services.size(); ++i) {
+        cout << i+1 << ". " << services[i].getName() << " " << services[i].getPrice() << ")\n";
+    }
+    cin >> serviceChoice;
+    
+    if (serviceChoice > 0 && serviceChoice <= services.size()) {
+        clients.emplace_back(firstName, lastName, age, login, password, services[serviceChoice-1]);
+        cout << "Клиент добавлен:\n" << clients.back() << endl;
+    } else {
+        cout << "Неверный выбор услуги!\n";
+    }
+    return 11;
+}
+
+int listClients() {
+    cout << "Список клиентов:\n";
+    for (const auto& client : clients) {
+        cout << client << "\n---\n";
+    }
+    return 12;
+}
+
+int compareServices() {
+    if (services.size() < 2) {
+        cout << "Добавьте хотя бы 2 услуги для сравнения!\n";
+        return 13;
+    }
+    
+    cout << "Сравнение услуг:\n";
+    cout << "1. " << services[0].getName() << "\n2. " << services[1].getName() << "\n";
+    
+    if (services[0] == services[1]) {
+        cout << "Услуги идентичны\n";
+    } else if (services[0] < services[1]) {
+        cout << services[0].getName() << " дешевле чем " << services[1].getName() << "\n";
+    } else {
+        cout << services[1].getName() << " дешевле чем " << services[0].getName() << "\n";
+    }
+    cout << endl;
+    return 14;
+}
+
+
+
 #pragma endregion
 
-const int ITEMS_NUMBER = 4;
+const int ITEMS_NUMBER = 14;
 
 
 int main() {
+    #ifdef _WIN32
+    system("chcp 65001");
+    #endif
+    setlocale(LC_ALL, "ru_RU.UTF-8");
+    services.emplace_back("Фотосессия", 6000.0, "Стандартная фотосессия в студии");
+    services.emplace_back("Портрет", 7000.0, "Профессиональный портрет");
+    employees.emplace_back("Иван", "Петров", 30, "ivan", "123", "Фотограф");
+    clients.emplace_back("Анна", "Смирнова", 25, "anna", "456", services[0]);
+
     CMenuItem items[ITEMS_NUMBER] {
         CMenuItem{"Root of 25", f1}, 
         CMenuItem{"Print house", f2},
         CMenuItem{"Display Employee Info", displayEmployeeInfo},
-        CMenuItem{"Display Client Info", displayClientInfo}};
-    CMenu menu("My console menu", items, ITEMS_NUMBER);
+        CMenuItem{"Display Client Info", displayClientInfo},
+        CMenuItem{"Добавить услугу", addService},
+        CMenuItem{"Список услуг", listServices},
+        CMenuItem{"Сортировать услуги по цене", sortServicesByPrice},
+        CMenuItem{"Добавить сотрудника", addEmployee},
+        CMenuItem{"Список сотрудников", listEmployees},
+        CMenuItem{"Добавить клиента", addClient},
+        CMenuItem{"Список клиентов", listClients},
+        CMenuItem{"Сравнить услуги", compareServices},
+        CMenuItem{"Тест оператора вывода", []() { cout << services[0] << endl; return 15; }},
+        CMenuItem{"Тест оператора сравнения", []() { 
+            cout << "Услуги " << (services[0] == services[1] ? "равны" : "разные") << endl; 
+            return 16; 
+        }}
+        };
+    CMenu menu("Фотостудия - Управление", items, ITEMS_NUMBER);
     while (menu.runCommand()) {};
 
     return 0;

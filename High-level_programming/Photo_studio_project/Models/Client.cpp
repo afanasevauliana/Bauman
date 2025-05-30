@@ -6,10 +6,16 @@ Client::Client(const std::string& firstName, const std::string& lastName, int ag
     : User(firstName, lastName, age, login, password), service(service) {}
 
 void Client::displayInfo() const {
-    User::displayInfo();
-    std::cout << "Service: " << service.getName() << std::endl;
+    std::cout << "Клиент: " << firstName << " " << lastName << "\nВозраст: " << age 
+              << "\nУслуга: " << service.getName() << std::endl;
 }
 
 void Client::authenticate() const {
     User::authenticate();
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Client& client) {
+    client.displayInfo();
+    return os;
 }

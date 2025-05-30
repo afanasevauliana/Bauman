@@ -6,10 +6,16 @@ Employee::Employee(const std::string& firstName, const std::string& lastName, in
     : User(firstName, lastName, age, login, password), position(position) {}
 
 void Employee::displayInfo() const {
-    User::displayInfo();
-    std::cout << "Position: " << position << std::endl;
+    std::cout << "Сотрудник: " << firstName << " " << lastName << "\nВозраст: " << age 
+              << "\nДолжность: " << position << std::endl;
 }
 
 void Employee::authenticate() const {
     User::authenticate();
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Employee& employee) {
+    employee.displayInfo();
+    return os;
 }

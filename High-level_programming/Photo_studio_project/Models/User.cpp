@@ -12,3 +12,13 @@ void User::displayInfo() const {
 void User::authenticate() const {
     std::cout << "Login: " << login << "\nPassword: ******" << std::endl;
 }
+
+
+std::ostream& operator<<(std::ostream& os, const User& user) {
+    user.displayInfo();
+    return os;
+}
+
+bool User::operator==(const User& other) const {
+    return login == other.login;
+}

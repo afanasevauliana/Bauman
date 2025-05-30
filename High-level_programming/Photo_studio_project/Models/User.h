@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 class User {
 protected:
@@ -16,4 +17,8 @@ public:
 
     virtual void displayInfo() const = 0;
     virtual void authenticate() const = 0;
+
+
+    friend std::ostream& operator<<(std::ostream& os, const User& user);
+    bool operator==(const User& other) const;
 };
