@@ -5,16 +5,16 @@
 #include "Models/Employee.h"
 #include "Models/Client.h"
 #include "Models/Service.h"
+#include "Models/MyVector.h"
 #include <iostream>
 #include <cmath>
-#include <vector>
-#include <algorithm>
 #include <locale>
 #include <codecvt>
 using namespace std;
-vector<Service> services;
-vector<Employee> employees;
-vector<Client> clients;
+
+MyVector<Service> services;
+MyVector<Employee> employees;
+MyVector<Client> clients;
 
 #pragma region функции-заглушки
 int f1() {
@@ -61,14 +61,12 @@ int addService() {
 
 int listServices() {
     cout << "Список услуг:\n";
-    for (const auto& service : services) {
-        cout << service << "\n---\n";
-    }
+    cout << services;
     return 6;
 }
 
 int sortServicesByPrice() {
-    sort(services.begin(), services.end());
+    services.sort();
     cout << "Услуги отсортированы по цене.\n";
     listServices();
     return 7;
@@ -92,16 +90,14 @@ int addEmployee() {
     cout << "Введите должность: ";
     getline(cin, position);
     
-    employees.emplace_back(firstName, lastName, age, login, password, position);
-    cout << "Сотрудник добавлен:\n" << employees.back() << endl;
+    employees.push_back(Employee(firstName, lastName, age, login, password, position));
+    cout << "Сотрудник добавлен:\n" << employees[employees.size() - 1] << endl;
     return 8;
 }
 
 int listEmployees() {
     cout << "Список сотрудников:\n";
-    for (const auto& emp : employees) {
-        cout << emp << "\n---\n";
-    }
+    cout << employees;
     return 9;
 }
 
@@ -127,13 +123,13 @@ int addClient() {
     
     cout << "Выберите услугу:\n";
     for (size_t i = 0; i < services.size(); ++i) {
-        cout << i+1 << ". " << services[i].getName() << " " << services[i].getPrice() << ")\n";
+        cout << i+1 << ". " << services[i].getName() << " (" << services[i].getPrice() << ")\n";
     }
     cin >> serviceChoice;
     
     if (serviceChoice > 0 && serviceChoice <= services.size()) {
-        clients.emplace_back(firstName, lastName, age, login, password, services[serviceChoice-1]);
-        cout << "Клиент добавлен:\n" << clients.back() << endl;
+        clients.push_back(Client(firstName, lastName, age, login, password, services[serviceChoice-1]));
+        cout << "Клиент добавлен:\n" << clients[clients.size() - 1] << endl;
     } else {
         cout << "Неверный выбор услуги!\n";
     }
@@ -142,9 +138,7 @@ int addClient() {
 
 int listClients() {
     cout << "Список клиентов:\n";
-    for (const auto& client : clients) {
-        cout << client << "\n---\n";
-    }
+    cout << clients;
     return 12;
 }
 
@@ -168,22 +162,19 @@ int compareServices() {
     return 14;
 }
 
-
-
 #pragma endregion
 
 const int ITEMS_NUMBER = 14;
-
 
 int main() {
     #ifdef _WIN32
     system("chcp 65001");
     #endif
     setlocale(LC_ALL, "ru_RU.UTF-8");
-    services.emplace_back("Фотосессия", 6000.0, "Стандартная фотосессия в студии");
-    services.emplace_back("Портрет", 7000.0, "Профессиональный портрет");
-    employees.emplace_back("Иван", "Петров", 30, "ivan", "123", "Фотограф");
-    clients.emplace_back("Анна", "Смирнова", 25, "anna", "456", services[0]);
+    services.push_back(Service("Фотосессия", 6000.0, "Стандартная фотосессия в студии"));
+    services.push_back(Service("Портрет", 7000.0, "Профессиональный портрет"));
+    employees.push_back(Employee("Иван", "Петров", 30, "ivan", "123", "Фотограф"));
+    clients.push_back(Client("Анна", "Смирнова", 25, "anna", "456", services[0]));
 
     CMenuItem items[ITEMS_NUMBER] {
         CMenuItem{"Root of 25", f1}, 
@@ -203,7 +194,7 @@ int main() {
             cout << "Услуги " << (services[0] == services[1] ? "равны" : "разные") << endl; 
             return 16; 
         }}
-        };
+    };
     CMenu menu("Фотостудия - Управление", items, ITEMS_NUMBER);
     while (menu.runCommand()) {};
 

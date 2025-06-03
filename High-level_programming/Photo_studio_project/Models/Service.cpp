@@ -76,3 +76,7 @@ bool Service::operator==(const Service& other) const {
 bool Service::operator<(const Service& other) const {
     return price < other.price;
 }
+
+bool Service::operator>(const Service& other) const {
+    return price > other.price;
+}
